@@ -1,18 +1,21 @@
 :root{
   --bg0:#070A12;
   --bg1:#0B1226;
+
   --card: rgba(255,255,255,0.06);
   --card2: rgba(255,255,255,0.10);
   --stroke: rgba(255,255,255,0.12);
+
   --text: rgba(255,255,255,0.92);
   --muted: rgba(255,255,255,0.62);
+
   --accent:#7CF6FF;   /* icy cyan */
   --accent2:#B98CFF;  /* soft purple */
+
+  /* Grid + terminal */
   --grid: rgba(124,246,255,0.08);
   --gridBold: rgba(124,246,255,0.14);
   --terminalGreen: #63ff7a;
-}
-
 }
 
 *{ box-sizing:border-box; }
@@ -27,28 +30,27 @@ html{
   background-attachment: fixed;
 }
 
-
 body{
   font-family: system-ui, Arial;
   margin: 0;
   padding: 20px;
   color: var(--text);
-  background: transparent;         /* important */
-  min-height: 100vh;               /* important */
+  background: transparent;
+  min-height: 100vh;
   display:flex;
   justify-content:center;
-  align-items:flex-start;          /* important: stops weird stretching */
+  align-items:flex-start;
 }
 
-
-/* Center the whole app nicely */
+/* Center app */
 body > .app{
   width:100%;
   max-width: 920px;
   position: relative;
-  z-index: 2; /* above background */
+  z-index: 2;
 }
 
+/* Graph paper grid overlay */
 html::before{
   content:"";
   position:fixed;
@@ -56,7 +58,6 @@ html::before{
   pointer-events:none;
   z-index:0;
 
-  /* graph paper: thin grid + bold grid */
   background:
     linear-gradient(to right, var(--grid) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid) 1px, transparent 1px),
@@ -68,9 +69,24 @@ html::before{
   mask-image: radial-gradient(800px 600px at 45% 20%, black 0%, transparent 78%);
 }
 
+/* CRT scanlines */
+.scanlines{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1; /* above grid, below cards */
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.03) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.22;
+}
 
-
-/* Terminal overlay text  HELLO WORLD  */
+/* Terminal overlay: Hello World */
 .terminal-mark{
   position: fixed;
   top: 18px;
@@ -85,7 +101,6 @@ html::before{
   pointer-events: none;
 }
 
-
 .terminal-mark .cursor{
   display:inline-block;
   width: 8px;
@@ -97,8 +112,7 @@ html::before{
   50%{ opacity: 0; }
 }
 
-
-/* Floating pixel “particles” container */
+/* Floating pixel particles */
 .bg-fx{
   position:fixed;
   inset:0;
@@ -124,6 +138,7 @@ html::before{
   filter: drop-shadow(0 0 10px rgba(185,140,255,0.18));
   animation-duration: 14s;
 }
+
 @keyframes floaty{
   from{ transform: translateY(110vh) rotate(0deg); }
   to  { transform: translateY(-20vh) rotate(180deg); }
@@ -136,7 +151,7 @@ h1{
 }
 p{ color: var(--muted); }
 
-/* Nav as “tabs” */
+/* Nav */
 nav{
   display:flex;
   gap: 10px;
@@ -168,12 +183,16 @@ nav a:hover{
   box-shadow:
     0 10px 24px rgba(0,0,0,0.25),
     inset 0 1px 0 rgba(255,255,255,0.05);
+
+  max-width: 100%;
+  overflow: hidden; /* keeps inner stuff clipped to rounded corners */
 }
 
-/* Make nested cards less bulky */
+/* Nested cards (Idea sections) */
 .card .card{
   margin: 12px 0;
   padding: 14px;
+  border-radius: 16px;
   background: rgba(255,255,255,0.03);
 }
 
@@ -188,6 +207,7 @@ label{
 input, textarea{
   display:block;
   width: 100%;
+  max-width: 100%;
   padding: 12px 12px;
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 14px;
@@ -206,9 +226,21 @@ input:focus, textarea:focus{
   box-shadow: 0 0 0 4px rgba(124,246,255,0.14);
 }
 
-textarea{ min-height: 90px; resize: vertical; }
+textarea{
+  min-height: 90px;
+  resize: vertical;
+}
 
-/* Buttons (works for <button> and <input type="submit">) */
+/* Slider rows */
+.row{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  margin: 10px 0;
+  flex-wrap: wrap; /* prevents overflow on small screens */
+}
+
+/* Buttons */
 button,
 input[type="button"],
 input[type="submit"]{
@@ -221,7 +253,11 @@ input[type="submit"]{
   border-radius: 14px;
   border: 1px solid rgba(124,246,255,0.45);
   color: #021017;
-  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent2) 40%, var(--accent) 60%));
+  background: linear-gradient(
+    90deg,
+    var(--accent),
+    color-mix(in srgb, var(--accent2) 40%, var(--accent) 60%)
+  );
   cursor: pointer;
   box-shadow: 0 12px 28px rgba(124,246,255,0.14);
   transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
@@ -249,48 +285,67 @@ input[type="submit"]:disabled{
   filter: grayscale(0.2);
 }
 
-@media (max-width:600px){
-  button, input[type="button"], input[type="submit"]{ width:100%; }
+/* ---------- Mobile layout polish (the “second thing”) ---------- */
+@media (max-width: 700px){
+  body{ padding: 12px; }
+
+  body > .app{ max-width: 560px; }
+
+  h1{
+    font-size: 34px;
+    line-height: 1.05;
+    margin: 6px 0 10px;
+  }
+
+  .card{
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 14px;
+  }
+
+  .card .card{
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 12px;
+  }
+
+  label{
+    margin: 8px 0 6px;
+    font-size: 13px;
+    letter-spacing: 0.2px;
+  }
+
+  input, textarea{
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 15px;
+  }
+
+  textarea{ min-height: 70px; }
+
+  button, input[type="button"], input[type="submit"]{
+    width: 100%;
+    min-width: 0;
+    border-radius: 14px;
+    padding: 13px 14px;
+    font-size: 16px;
+  }
+
+  nav a{
+    padding: 9px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+  }
+
+  .terminal-mark{
+    top: 12px;
+    right: 12px;
+    font-size: 12px;
+  }
 }
 
-/* CRT scanlines */
-.scanlines{
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.03),
-    rgba(255,255,255,0.03) 1px,
-    transparent 1px,
-    transparent 4px
-  );
-  mix-blend-mode: overlay;
-  opacity: 0.22;
+/* ---------- Remove dreamy floating pixels on phones (the “third thing”) ---------- */
+@media (max-width: 700px){
+  .bg-fx{ display:none; }
 }
 
-
-/* Fix overflow/clipping on mobile (nested cards + rounded corners) */
-.card{
-  overflow: hidden;           /* keeps inner stuff inside rounded corners */
-}
-
-/* Ensure form fields don’t exceed container width */
-input, textarea{
-  max-width: 100%;
-}
-
-/* Prevent any flex/grid rows from forcing overflow */
-.row{
-  flex-wrap: wrap;
-}
-
-/* Mobile: nested cards shouldn’t have extra width */
-@media (max-width:700px){
-  body{ padding: 14px; }
-  .card{ border-radius: 16px; }
-  .card .card{ border-radius: 14px; }
-}
-
-.card{ max-width: 100%; }
