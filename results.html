@@ -2,74 +2,103 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <title>Results</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<nav>
-<a href="submit.html">Submit</a>
-<a href="vote.html">Vote</a>
-<a href="results.html">Results</a>
-</nav>
+  <div class="bg-fx" id="bgfx"></div>
+  <div class="app">
 
-<h1>Results</h1>
-<p><small>Sorted by Avg Want (then Avg Feasible). </small></p>
 
-<div class="card">
-  <table id="t">
-    <thead>
-      <tr>
-        <th>Project</th>
-        <th>Avg Want</th>
-        <th>Avg Feasible</th>
-        <th># Votes</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <p id="msg"></p>
-</div>
+    <nav>
+    <a href="submit.html">Submit</a>
+    <a href="vote.html">Vote</a>
+    <a href="results.html">Results</a>
+    </nav>
+    
+    <h1>Results</h1>
+    <p><small>Sorted by Avg Want (then Avg Feasible). </small></p>
+    
+    <div class="card">
+      <table id="t">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Avg Want</th>
+            <th>Avg Feasible</th>
+            <th># Votes</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="msg"></p>
+    </div>
+    
+    <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxmH6wodw-LA55_cnFFNp4G7n2WeFh6-fKDaFjAuh3e3mJOuOtiQugfWqnPvT_9SJLCPA/exec";
+    const API_KEY = "class9";
+    
+    
+    async function loadResults(){
+      const msg = document.getElementById("msg");
+      try{
+        const r = await fetch(API_URL + "?action=results&apiKey=" + encodeURIComponent(API_KEY));
+        const data = await r.json();
+        if(!data.ok) throw new Error(data.error || "Could not load results");
+    
+        const tbody = document.querySelector("#t tbody");
+        tbody.innerHTML = "";
+    
+        (data.results || []).forEach((x, idx)=>{
+          const tr = document.createElement("tr");
+          const medal = idx === 0 ? "🏆 " : idx === 1 ? "🥈 " : idx === 2 ? "🥉 " : "";
+          tr.innerHTML = `
+            <td>${medal}${x.title}</td>
+            <td>${Number(x.avgWant).toFixed(2)}</td>
+            <td>${Number(x.avgFeasible).toFixed(2)}</td>
+            <td>${x.votes}</td>
+          `;
+          tbody.appendChild(tr);
+        });
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxmH6wodw-LA55_cnFFNp4G7n2WeFh6-fKDaFjAuh3e3mJOuOtiQugfWqnPvT_9SJLCPA/exec";
-const API_KEY = "class9";
-async function loadResults(){
-  const msg = document.getElementById("msg");
-  try{
-    const r = await fetch(API_URL + "?action=results&apiKey=" + encodeURIComponent(API_KEY));
-    const data = await r.json();
-    if(!data.ok) throw new Error(data.error || "Could not load results");
-
-    const tbody = document.querySelector("#t tbody");
-    tbody.innerHTML = "";
-
-    (data.results || []).forEach(x=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${x.title}</td>
-        <td>${Number(x.avgWant).toFixed(2)}</td>
-        <td>${Number(x.avgFeasible).toFixed(2)}</td>
-        <td>${x.votes}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    if(!(data.results || []).length){
-      msg.textContent = "No votes yet.";
-    } else {
-      msg.textContent = "Live updating…";
+        if(!(data.results || []).length){
+          msg.textContent = "No votes yet — waiting for players… 🎮";
+        } else {
+          msg.textContent = "Live updating… (auto refresh every 5s) ⚡";
+        }
+    
+      }catch(e){
+        document.getElementById("msg").textContent = "Error: " + e.message;
+      }
     }
+    
+       const msg = document.getElementById("msg");
+      msg.textContent = "Loading results…";
+      
+      loadResults();
+      setInterval(loadResults, 5000);
 
-  }catch(e){
-    msg.textContent = "Error: " + e.message;
-  }
-}
-
-loadResults();
-setInterval(loadResults, 5000);
-
-</script>
-
+    
+      // Background pixels
+      (function makePixels(){
+        const host = document.getElementById("bgfx");
+        if(!host) return;
+        const count = 26;
+        for(let i=0;i<count;i++){
+          const d = document.createElement("div");
+          d.className = "pixel" + (Math.random() < 0.35 ? " p2" : "");
+          d.style.left = Math.floor(Math.random()*100) + "vw";
+          d.style.animationDelay = (Math.random()*10).toFixed(2) + "s";
+          d.style.opacity = (0.07 + Math.random()*0.12).toFixed(2);
+          d.style.transform = `translateY(${100 + Math.random()*60}vh)`;
+          host.appendChild(d);
+        }
+      })();
+    </script>
+        
+</div>
 </body>
 </html>
