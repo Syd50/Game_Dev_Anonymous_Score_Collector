@@ -12,3 +12,5 @@ small { color: #666; }
 table { width: 100%; border-collapse: collapse; margin-top: 12px; }
 th, td { text-align:left; padding: 10px; border-bottom: 1px solid #eee; }
 nav { display:flex; gap: 12px; margin-bottom: 16px; }
+
+
