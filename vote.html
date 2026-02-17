@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vote</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+<a href="submit.html">Submit</a>
+<a href="vote.html">Vote</a>
+<a href="results.html">Results</a>
+</nav>
+
+<h1>Vote on Projects</h1>
+<p><small>0 = no, 10 = yes. Vote for: (1) Want to work on it, (2) Feasibility.</small></p>
+
+<div class="card">
+  <label>Alias</label>
+  <input id="alias" placeholder="same alias you used before (or new)">
+</div>
+
+<div id="list"></div>
+
+<button id="send">Submit Votes</button>
+<p id="msg"></p>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxmH6wodw-LA55_cnFFNp4G7n2WeFh6-fKDaFjAuh3e3mJOuOtiQugfWqnPvT_9SJLCPA/exec
+";
+const API_KEY = "class9";
+
+const list = document.getElementById("list");
+
+function makeSliderRow(labelText, className){
+  const row = document.createElement("div");
+  row.className = "row";
+  row.innerHTML = `
+    <div style="min-width:220px">${labelText}</div>
+    <input class="range ${className}" type="range" min="0" max="10" value="5">
+    <div class="val">5</div>
+  `;
+  const range = row.querySelector("input");
+  const val = row.querySelector(".val");
+  range.oninput = () => val.textContent = range.value;
+  return row;
+}
+
+async function loadIdeas(){
+  const r = await fetch(API_URL + "?action=ideas&apiKey=" + encodeURIComponent(API_KEY));
+  const data = await r.json();
+  if(!data.ok) throw new Error(data.error || "Could not load ideas");
+  return data.ideas || [];
+}
+
+(async ()=>{
+  try{
+    const ideas = await loadIdeas();
+    if(!ideas.length){
+      list.innerHTML = `<div class="card">No ideas yet. Submit ideas first.</div>`;
+      return;
+    }
+
+    ideas.forEach(idea=>{
+      const card = document.createElement("div");
+      card.className = "card";
+      card.dataset.projectId = idea.id;
+      card.dataset.title = idea.title;
+
+      card.innerHTML = `
+        <h3 style="margin:0 0 6px">${idea.title}</h3>
+        <p style="margin:0 0 10px"><small>${idea.description || ""}</small></p>
+      `;
+
+      card.appendChild(makeSliderRow("Want to work on it", "want"));
+      card.appendChild(makeSliderRow("Feasibility", "feasible"));
+
+      list.appendChild(card);
+    });
+
+  }catch(e){
+    document.getElementById("msg").textContent = "Error: " + e.message;
+  }
+})();
+
+document.getElementById("send").onclick = async ()=>{
+  const alias = document.getElementById("alias").value.trim();
+  const msg = document.getElementById("msg");
+  msg.textContent = "";
+  if(!alias){ msg.textContent = "enter alias"; return; }
+
+  const cards = [...document.querySelectorAll("#list .card")];
+
+  try{
+    for(const c of cards){
+      const want = c.querySelector(".want").value;
+      const feasible = c.querySelector(".feasible").value;
+
+      const payload = {
+        type: "vote",
+        apiKey: API_KEY,
+        alias: alias,
+        projectId: c.dataset.projectId,
+        title: c.dataset.title,
+        want: want,
+        feasible: feasible
+      };
+
+      const r = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
+      const data = await r.json();
+      if(!data.ok) throw new Error(data.error || "vote failed");
+    }
+
+    msg.textContent = "Votes submitted! ✅ (Submitting again overwrites your old votes)";
+  }catch(e){
+    msg.textContent = "Error: " + e.message;
+  }
+};
+</script>
+
+</body>
+</html>
