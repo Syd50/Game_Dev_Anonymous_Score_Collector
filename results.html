@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Results</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+<a href="submit.html">Submit</a>
+<a href="vote.html">Vote</a>
+<a href="results.html">Results</a>
+</nav>
+
+<h1>Results</h1>
+<p><small>Sorted by Avg Want (then Avg Feasible). Refresh to update.</small></p>
+
+<div class="card">
+  <table id="t">
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Avg Want</th>
+        <th>Avg Feasible</th>
+        <th># Votes</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p id="msg"></p>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxmH6wodw-LA55_cnFFNp4G7n2WeFh6-fKDaFjAuh3e3mJOuOtiQugfWqnPvT_9SJLCPA/exec";
+const API_KEY = "class9";
+
+(async ()=>{
+  const msg = document.getElementById("msg");
+  try{
+    const r = await fetch(API_URL + "?action=results&apiKey=" + encodeURIComponent(API_KEY));
+    const data = await r.json();
+    if(!data.ok) throw new Error(data.error || "Could not load results");
+
+    const tbody = document.querySelector("#t tbody");
+    tbody.innerHTML = "";
+
+    (data.results || []).forEach(x=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${x.title}</td>
+        <td>${Number(x.avgWant).toFixed(2)}</td>
+        <td>${Number(x.avgFeasible).toFixed(2)}</td>
+        <td>${x.votes}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    if(!(data.results || []).length){
+      msg.textContent = "No votes yet.";
+    }
+
+  }catch(e){
+    msg.textContent = "Error: " + e.message;
+  }
+})();
+</script>
+
+</body>
+</html>
