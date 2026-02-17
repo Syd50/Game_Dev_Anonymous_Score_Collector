@@ -23,7 +23,7 @@
 
 <div class="card">
 <label>Alias</label>
-<input id="alias">
+<input id="alias" placeholder="e.g. mintpanda" autocomplete="off">
 
 <div id="ideas"></div>
 
@@ -57,8 +57,9 @@ for(let i=1;i<=3;i++){
       const titles = [...document.querySelectorAll(".title")];
       const descs = [...document.querySelectorAll(".desc")];
     
-      msg.textContent = "";
-      if(!alias){ msg.textContent = "Enter an alias first ✨"; return; }
+      msg.textContent = "Uploading… ⏳";
+      if(!alias){ msg.textContent = "Enter an alias first ✨"; 
+                 return; }
     
       let sent = 0;
     
@@ -82,10 +83,11 @@ for(let i=1;i<=3;i++){
         sent++;
       }
 
-    if(sent === 0){
+      if(sent === 0){
       msg.textContent = "Add at least 1 idea title 📝";
       return;
     }
+
 
     // Cute game-dev reaction
     msg.textContent = `Submitted! ✅  +${sent * 5} Creativity XP 🌟`;
