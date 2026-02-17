@@ -94,17 +94,23 @@ async function renderIdeas(){
 }
 
 document.getElementById("send").onclick = async ()=>{
+  const btn = document.getElementById("send");
   const alias = document.getElementById("alias").value.trim();
+
   msg.textContent = "";
 
   if(!alias){
-    msg.textContent = "enter alias";
+    msg.textContent = "Enter alias first ✨";
     return;
   }
 
   const cards = [...document.querySelectorAll("#list .card")];
 
   try{
+    btn.disabled = true;
+    btn.textContent = "Submitting…";
+    msg.innerHTML = "Sending votes <span class='spinner'></span>";
+
     for(const c of cards){
       const want = c.querySelector(".want").value;
       const feasible = c.querySelector(".feasible").value;
@@ -112,11 +118,11 @@ document.getElementById("send").onclick = async ()=>{
       const payload = {
         type: "vote",
         apiKey: API_KEY,
-        alias: alias,
+        alias,
         projectId: c.dataset.projectId,
         title: c.dataset.title,
-        want: want,
-        feasible: feasible
+        want,
+        feasible
       };
 
       const r = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
@@ -124,10 +130,12 @@ document.getElementById("send").onclick = async ()=>{
       if(!data.ok) throw new Error(data.error || "vote failed");
     }
 
-    // Cute game-dev reaction
-    msg.textContent = "Votes submitted! ✅  +10 Team Harmony XP ✨ (resubmitting overwrites)";
+    msg.textContent = "Votes saved! ✅ +10 Team Harmony XP ✨";
   }catch(e){
     msg.textContent = "Error: " + e.message;
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "Submit Votes";
   }
 };
 
@@ -135,7 +143,6 @@ document.getElementById("send").onclick = async ()=>{
 (function makePixels(){
   const host = document.getElementById("bgfx");
   if(!host) return;
-
   const count = 26;
   for(let i=0;i<count;i++){
     const d = document.createElement("div");
