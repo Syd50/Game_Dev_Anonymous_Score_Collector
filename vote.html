@@ -26,7 +26,12 @@
 
 <div class="card">
   <label>Alias</label>
-  <input id="alias" placeholder="same alias you used before (or new)">
+<div class="alias-row">
+  <input id="alias" placeholder="e.g. mintpanda" autocomplete="off">
+  <button type="button" id="genAlias">🎲 Random</button>
+</div>
+<p id="aliasStatus" class="muted"></p>
+
 </div>
 
 <div id="list"></div>
