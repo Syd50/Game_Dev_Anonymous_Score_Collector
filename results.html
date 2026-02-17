@@ -34,8 +34,7 @@
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxmH6wodw-LA55_cnFFNp4G7n2WeFh6-fKDaFjAuh3e3mJOuOtiQugfWqnPvT_9SJLCPA/exec";
 const API_KEY = "class9";
-
-(async ()=>{
+async function loadResults(){
   const msg = document.getElementById("msg");
   try{
     const r = await fetch(API_URL + "?action=results&apiKey=" + encodeURIComponent(API_KEY));
@@ -58,12 +57,18 @@ const API_KEY = "class9";
 
     if(!(data.results || []).length){
       msg.textContent = "No votes yet.";
+    } else {
+      msg.textContent = "Live updating…";
     }
 
   }catch(e){
     msg.textContent = "Error: " + e.message;
   }
-})();
+}
+
+loadResults();
+setInterval(loadResults, 5000);
+
 </script>
 
 </body>
