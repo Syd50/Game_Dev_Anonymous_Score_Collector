@@ -181,6 +181,58 @@ if(pet){
     pet.classList.add("jump");
   });
 }
+
+
+    /* ===== Alias generator ===== */
+
+const aliasInput = document.getElementById("alias");
+const aliasStatus = document.getElementById("aliasStatus");
+const btnGen = document.getElementById("genAlias");
+
+const aliasPool = [
+"PixelWizard","DebugDuck","ShaderSlayer","404Knight","NullPointer",
+"ByteBard","ConsoleCat","LoopGoblin","SyntaxSamurai","CrashMage",
+"QuantumPotato","BinaryBunny","GhostCompiler","BitBandit","RAMRogue",
+"KernelKitten","TurboToad","GlitchGnome","NeonNoodle","AIAlchemist",
+"StackSprite","CosmicCoder","NanoNinja","PacketPirate","LogicLizard",
+"OverclockOwl","CompileDragon","ScriptSprite","CyberSquirrel","RuntimeRaccoon"
+];
+
+const STORAGE_KEY = "claimedAlias";
+
+const saved = localStorage.getItem(STORAGE_KEY);
+if(saved){
+  aliasInput.value = saved;
+  aliasStatus.textContent = "Alias locked in ✔";
+}
+
+btnGen?.addEventListener("click", ()=>{
+
+  if(localStorage.getItem(STORAGE_KEY)){
+    aliasStatus.textContent = "Alias already chosen 😎";
+    return;
+  }
+
+  const used = JSON.parse(localStorage.getItem("usedAliases") || "[]");
+  const available = aliasPool.filter(a=>!used.includes(a));
+
+  if(!available.length){
+    aliasStatus.textContent = "All aliases taken 😱";
+    return;
+  }
+
+  const pick = available[Math.floor(Math.random()*available.length)];
+
+  aliasInput.value = pick;
+  localStorage.setItem(STORAGE_KEY, pick);
+
+  used.push(pick);
+  localStorage.setItem("usedAliases", JSON.stringify(used));
+
+  aliasStatus.textContent = "Codename assigned 🎮";
+});
+
+    
 </script>
 
 
