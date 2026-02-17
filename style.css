@@ -271,3 +271,24 @@ input[type="submit"]:disabled{
 }
 
 
+/* Fix overflow/clipping on mobile (nested cards + rounded corners) */
+.card{
+  overflow: hidden;           /* keeps inner stuff inside rounded corners */
+}
+
+/* Ensure form fields don’t exceed container width */
+input, textarea{
+  max-width: 100%;
+}
+
+/* Prevent any flex/grid rows from forcing overflow */
+.row{
+  flex-wrap: wrap;
+}
+
+/* Mobile: nested cards shouldn’t have extra width */
+@media (max-width:700px){
+  body{ padding: 14px; }
+  .card{ border-radius: 16px; }
+  .card .card{ border-radius: 14px; }
+}
