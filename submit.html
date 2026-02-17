@@ -117,5 +117,19 @@ for(let i=1;i<=3;i++){
 </script>
 </div>
   
+<div class="pixel-pet" id="pixelPet" title="click me"></div>
+
+  <script>
+const pet = document.getElementById("pixelPet");
+if(pet){
+  pet.addEventListener("click", ()=>{
+    pet.classList.remove("jump");
+    void pet.offsetWidth;
+    pet.classList.add("jump");
+  });
+}
+</script>
+
+
 </body>
 </html>
