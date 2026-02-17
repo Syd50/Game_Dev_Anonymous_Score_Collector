@@ -14,17 +14,25 @@
 
 html, body{ height:100%; }
 
+html{
+  background: radial-gradient(1200px 800px at 20% 0%, #131B3B 0%, transparent 60%),
+              radial-gradient(1200px 800px at 90% 30%, #2A1440 0%, transparent 55%),
+              linear-gradient(180deg, var(--bg0), var(--bg1));
+  background-attachment: fixed;
+}
+
 body{
   font-family: system-ui, Arial;
   margin: 0;
   padding: 20px;
   color: var(--text);
-  background: radial-gradient(1200px 800px at 20% 0%, #131B3B 0%, transparent 60%),
-              radial-gradient(1200px 800px at 90% 30%, #2A1440 0%, transparent 55%),
-              linear-gradient(180deg, var(--bg0), var(--bg1));
+  background: transparent;         /* important */
+  min-height: 100vh;               /* important */
   display:flex;
   justify-content:center;
+  align-items:flex-start;          /* important: stops weird stretching */
 }
+
 
 /* Center the whole app nicely */
 body > .app{
@@ -35,7 +43,7 @@ body > .app{
 }
 
 /* Subtle grid overlay */
-body::before{
+html::before{
   content:"";
   position:fixed;
   inset:0;
@@ -46,7 +54,36 @@ body::before{
   background-size: 42px 42px;
   mask-image: radial-gradient(700px 500px at 30% 10%, black 0%, transparent 70%);
   opacity: 0.55;
+  z-index: 0;
 }
+
+
+/* Terminal overlay text  HELLO WORLD  */
+.terminal-mark{
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 14px;
+  color: rgba(124,246,255,0.55);
+  text-shadow: 0 0 18px rgba(124,246,255,0.18);
+  letter-spacing: 0.2px;
+  z-index: 3;
+  user-select: none;
+  pointer-events: none;
+}
+
+.terminal-mark .cursor{
+  display:inline-block;
+  width: 8px;
+  animation: blink 1s steps(1) infinite;
+  opacity: 0.85;
+}
+
+@keyframes blink{
+  50%{ opacity: 0; }
+}
+
 
 /* Floating pixel “particles” container */
 .bg-fx{
