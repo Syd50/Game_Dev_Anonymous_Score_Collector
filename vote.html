@@ -2,11 +2,17 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <title>Vote</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  
+<div class="bg-fx" id="bgfx"></div>
+<div class="app">
 
+  
 <nav>
 <a href="submit.html">Submit</a>
 <a href="vote.html">Vote</a>
@@ -31,6 +37,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxmH6wodw-LA55_cnFFNp4G
 const API_KEY = "class9";
 
 const list = document.getElementById("list");
+const msg = document.getElementById("msg");
 
 function makeSliderRow(labelText, className){
   const row = document.createElement("div");
@@ -53,9 +60,10 @@ async function loadIdeas(){
   return data.ideas || [];
 }
 
-(async ()=>{
+async function renderIdeas(){
   try{
     const ideas = await loadIdeas();
+
     if(!ideas.length){
       list.innerHTML = `<div class="card">No ideas yet. Submit ideas first.</div>`;
       return;
@@ -74,20 +82,22 @@ async function loadIdeas(){
 
       card.appendChild(makeSliderRow("Want to work on it", "want"));
       card.appendChild(makeSliderRow("Feasibility", "feasible"));
-
       list.appendChild(card);
     });
 
   }catch(e){
-    document.getElementById("msg").textContent = "Error: " + e.message;
+    msg.textContent = "Error: " + e.message;
   }
-})();
+}
 
 document.getElementById("send").onclick = async ()=>{
   const alias = document.getElementById("alias").value.trim();
-  const msg = document.getElementById("msg");
   msg.textContent = "";
-  if(!alias){ msg.textContent = "enter alias"; return; }
+
+  if(!alias){
+    msg.textContent = "enter alias";
+    return;
+  }
 
   const cards = [...document.querySelectorAll("#list .card")];
 
@@ -111,12 +121,35 @@ document.getElementById("send").onclick = async ()=>{
       if(!data.ok) throw new Error(data.error || "vote failed");
     }
 
-    msg.textContent = "Votes submitted! ✅ (Submitting again overwrites your old votes)";
+    // Cute game-dev reaction
+    msg.textContent = "Votes submitted! ✅  +10 Team Harmony XP ✨ (resubmitting overwrites)";
   }catch(e){
     msg.textContent = "Error: " + e.message;
   }
 };
+
+// Cute floating pixels — run ONCE when the page loads
+(function makePixels(){
+  const host = document.getElementById("bgfx");
+  if(!host) return;
+
+  const count = 26;
+  for(let i=0;i<count;i++){
+    const d = document.createElement("div");
+    d.className = "pixel" + (Math.random() < 0.35 ? " p2" : "");
+    d.style.left = Math.floor(Math.random()*100) + "vw";
+    d.style.animationDelay = (Math.random()*10).toFixed(2) + "s";
+    d.style.opacity = (0.07 + Math.random()*0.12).toFixed(2);
+    d.style.transform = `translateY(${100 + Math.random()*60}vh)`;
+    host.appendChild(d);
+  }
+})();
+
+// Load ideas
+renderIdeas();
 </script>
+
+</div>
 
 </body>
 </html>
