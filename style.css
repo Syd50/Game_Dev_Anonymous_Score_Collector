@@ -6,7 +6,15 @@ body {
 }
 
 h1 { margin: 0 0 12px; }
-.card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin: 12px 0; }
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  padding: 18px;
+  margin: 16px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
 label { display:block; margin: 10px 0 6px; font-weight: 600; }
 input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 10px; }
 textarea { min-height: 80px; resize: vertical; }
@@ -19,4 +27,8 @@ table { width: 100%; border-collapse: collapse; margin-top: 12px; }
 th, td { text-align:left; padding: 10px; border-bottom: 1px solid #eee; }
 nav { display:flex; gap: 12px; margin-bottom: 16px; }
 
-
+@media (max-width:600px){
+  body{
+    padding:16px;
+  }
+}
