@@ -292,3 +292,5 @@ input, textarea{
   .card{ border-radius: 16px; }
   .card .card{ border-radius: 14px; }
 }
+
+.card{ max-width: 100%; }
