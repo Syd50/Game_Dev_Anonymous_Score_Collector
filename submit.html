@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Submit Ideas</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+<a href="submit.html">Submit</a>
+<a href="vote.html">Vote</a>
+<a href="results.html">Results</a>
+</nav>
+
+<h1>Submit Ideas</h1>
+
+<div class="card">
+<label>Alias</label>
+<input id="alias">
+
+<div id="ideas"></div>
+
+<button id="submitBtn">Submit</button>
+<p id="msg"></p>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxmH6wodw-LA55_cnFFNp4G7n2WeFh6-fKDaFjAuh3e3mJOuOtiQugfWqnPvT_9SJLCPA/exec";
+const API_KEY = "class9";
+
+const ideasDiv = document.getElementById("ideas");
+
+for(let i=1;i<=3;i++){
+const box=document.createElement("div");
+box.className="card";
+box.innerHTML=`
+<b>Idea ${i}</b>
+<label>Title</label>
+<input class="title">
+<label>Description</label>
+<textarea class="desc"></textarea>
+`;
+ideasDiv.appendChild(box);
+}
+
+document.getElementById("submitBtn").onclick=async()=>{
+const alias=document.getElementById("alias").value.trim();
+const titles=[...document.querySelectorAll(".title")];
+const descs=[...document.querySelectorAll(".desc")];
+const msg=document.getElementById("msg");
+
+if(!alias){msg.textContent="enter alias";return;}
+
+for(let i=0;i<titles.length;i++){
+if(!titles[i].value.trim())continue;
+
+await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+type:"idea",
+apiKey:API_KEY,
+alias:alias,
+title:titles[i].value,
+description:descs[i].value
+})
+});
+}
+
+msg.textContent="Submitted!";
+};
+</script>
+
+</body>
+</html>
