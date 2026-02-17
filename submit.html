@@ -2,11 +2,17 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <title>Submit Ideas</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  
+<div class="bg-fx" id="bgfx"></div>
+<div class="app">
 
+  
 <nav>
 <a href="submit.html">Submit</a>
 <a href="vote.html">Vote</a>
@@ -29,47 +35,84 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbxmH6wodw-LA55_cnFFNp4G7n2WeFh6-fKDaFjAuh3e3mJOuOtiQugfWqnPvT_9SJLCPA/exec";
 const API_KEY = "class9";
 
+
 const ideasDiv = document.getElementById("ideas");
+const msg = document.getElementById("msg");
 
 for(let i=1;i<=3;i++){
-const box=document.createElement("div");
-box.className="card";
-box.innerHTML=`
-<b>Idea ${i}</b>
-<label>Title</label>
-<input class="title">
-<label>Description</label>
-<textarea class="desc"></textarea>
-`;
-ideasDiv.appendChild(box);
+  const box = document.createElement("div");
+  box.className = "card";
+  box.innerHTML = `
+    <b>Idea ${i}</b>
+    <label>Title</label>
+    <input class="title" placeholder="e.g. Potion Shop Sim" />
+    <label>Description</label>
+    <textarea class="desc" placeholder="1–3 sentences"></textarea>
+  `;
+  ideasDiv.appendChild(box);
 }
 
-document.getElementById("submitBtn").onclick=async()=>{
-const alias=document.getElementById("alias").value.trim();
-const titles=[...document.querySelectorAll(".title")];
-const descs=[...document.querySelectorAll(".desc")];
-const msg=document.getElementById("msg");
+    document.getElementById("submitBtn").onclick = async ()=>{
+      const alias = document.getElementById("alias").value.trim();
+      const titles = [...document.querySelectorAll(".title")];
+      const descs = [...document.querySelectorAll(".desc")];
+    
+      msg.textContent = "";
+      if(!alias){ msg.textContent = "Enter an alias first ✨"; return; }
+    
+      let sent = 0;
+    
+      try{
+        for(let i=0;i<titles.length;i++){
+          const t = titles[i].value.trim();
+          if(!t) continue;
+    
+          const payload = {
+        type: "idea",
+        apiKey: API_KEY,
+        alias: alias,
+        title: t,
+        description: descs[i].value.trim()
+        };
+  
+        const r = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
+        const data = await r.json();
+        if(!data.ok) throw new Error(data.error || "submit failed");
+  
+        sent++;
+      }
 
-if(!alias){msg.textContent="enter alias";return;}
+    if(sent === 0){
+      msg.textContent = "Add at least 1 idea title 📝";
+      return;
+    }
 
-for(let i=0;i<titles.length;i++){
-if(!titles[i].value.trim())continue;
+    // Cute game-dev reaction
+    msg.textContent = `Submitted! ✅  +${sent * 5} Creativity XP 🌟`;
 
-await fetch(API_URL,{
-method:"POST",
-body:JSON.stringify({
-type:"idea",
-apiKey:API_KEY,
-alias:alias,
-title:titles[i].value,
-description:descs[i].value
-})
-});
-}
-
-msg.textContent="Submitted!";
-};
+      }catch(e){
+        msg.textContent = "Error: " + e.message;
+      }
+    };
+    
+      // Background pixels — run once on load
+      (function makePixels(){
+        const host = document.getElementById("bgfx");
+        if(!host) return;
+        const count = 26;
+        for(let i=0;i<count;i++){
+          const d = document.createElement("div");
+          d.className = "pixel" + (Math.random() < 0.35 ? " p2" : "");
+          d.style.left = Math.floor(Math.random()*100) + "vw";
+          d.style.animationDelay = (Math.random()*10).toFixed(2) + "s";
+          d.style.opacity = (0.07 + Math.random()*0.12).toFixed(2);
+          d.style.transform = `translateY(${100 + Math.random()*60}vh)`;
+          host.appendChild(d);
+        }
+    })();
+  
 </script>
-
+</div>
+  
 </body>
 </html>
