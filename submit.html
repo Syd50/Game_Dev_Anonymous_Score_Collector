@@ -26,12 +26,7 @@
 <div class="card">
 <label>Alias</label>
   
-<div class="alias-row">
-  <input id="alias" placeholder="e.g. mintpanda" autocomplete="off">
-  <button type="button" id="genAlias">🎲 Random</button>
-  <button type="button" id="genAlias">🎲 Reroll</button>
-</div>
-
+<input id="alias" placeholder="e.g. mintpanda" autocomplete="off">
 
   
 <p id="aliasStatus" class="muted"></p>
@@ -45,23 +40,13 @@
 
 
 <script>
-// ===== Alias generator (Submit page) =====
+// ===== Alias (Submit page) =====
 const aliasInput = document.getElementById("alias");
 const aliasStatus = document.getElementById("aliasStatus");
-const btnGen = document.getElementById("genAlias");
-
-const aliasPool = [
-  "PixelWizard","DebugDuck","ShaderSlayer","404Knight","NullPointer",
-  "ByteBard","ConsoleCat","LoopGoblin","SyntaxSamurai","CrashMage",
-  "QuantumPotato","BinaryBunny","GhostCompiler","BitBandit","RAMRogue",
-  "KernelKitten","TurboToad","GlitchGnome","NeonNoodle","AIAlchemist",
-  "StackSprite","CosmicCoder","NanoNinja","PacketPirate","LogicLizard",
-  "OverclockOwl","CompileDragon","ScriptSprite","CyberSquirrel","RuntimeRaccoon"
-];
 
 const STORAGE_KEY = "claimedAlias";
 
-// Save manually typed alias too (so it carries over to Vote)
+// Save manually typed alias so it carries over to Vote
 if(aliasInput){
   aliasInput.addEventListener("input", ()=>{
     const v = aliasInput.value.trim();
@@ -69,38 +54,21 @@ if(aliasInput){
   });
 }
 
-// auto-fill if already chosen
+// Auto-fill if already saved
 const saved = localStorage.getItem(STORAGE_KEY);
 if(saved && aliasInput){
   aliasInput.value = saved;
-  if(aliasStatus) aliasStatus.textContent = "Alias locked in ✔";
+  if(aliasStatus) aliasStatus.textContent = "Alias saved ✔";
 }
 
-if(btnGen && aliasInput){
-  btnGen.addEventListener("click", ()=>{
-    if(localStorage.getItem(STORAGE_KEY)){
-      if(aliasStatus) aliasStatus.textContent = `Alias locked: ${aliasInput.value} ✔`;
-      return;
-    }
-
-    const used = JSON.parse(localStorage.getItem("usedAliases") || "[]");
-    const available = aliasPool.filter(a=>!used.includes(a));
-
-    if(!available.length){
-      if(aliasStatus) aliasStatus.textContent = "All aliases taken 😱";
-      return;
-    }
-
-    const pick = available[Math.floor(Math.random()*available.length)];
-    aliasInput.value = pick;
-
-    localStorage.setItem(STORAGE_KEY, pick);
-    used.push(pick);
-    localStorage.setItem("usedAliases", JSON.stringify(used));
-
-    if(aliasStatus) aliasStatus.textContent = "Codename assigned 🎮";
-    btnGen.textContent = "✔";
-    setTimeout(()=> btnGen.textContent = "🎲 Reroll", 900);
+// Optional reset button (keep if you like)
+const resetBtn = document.getElementById("resetAlias");
+if(resetBtn){
+  resetBtn.addEventListener("click", ()=>{
+    localStorage.removeItem("claimedAlias");
+    localStorage.removeItem("usedAliases");
+    if(aliasStatus) aliasStatus.textContent = "Alias cleared. Type a new one ✨";
+    if(aliasInput) aliasInput.value = "";
   });
 }
 
@@ -179,40 +147,8 @@ document.getElementById("submitBtn").onclick = async ()=>{
     btn.textContent = "Submit";
   }
 };
-
-
-
-     
-                                // Background pixels
-                                // (function makePixels(){
-                                      
-                                //  const host = document.getElementById("bgfx");
-                                // if(!host) return;
-                                //  const count = 26;
-                                //   for(let i=0;i<count;i++){
-                                //   const d = document.createElement("div");
-                                //  d.className = "pixel" + (Math.random() < 0.35 ? " p2" : "");
-                                //   d.style.left = Math.floor(Math.random()*100) + "vw";
-                                //   d.style.animationDelay = (Math.random()*10).toFixed(2) + "s";
-                                //   d.style.opacity = (0.07 + Math.random()*0.12).toFixed(2);
-                                //   d.style.transform = `translateY(${100 + Math.random()*60}vh)`;
-                                //  host.appendChild(d);
-                                //  }
-                                //   })(); 
-
-// TEMP reset button for testing
-const resetBtn = document.getElementById("resetAlias");
-
-if(resetBtn){
-  resetBtn.addEventListener("click", ()=>{
-    localStorage.removeItem("claimedAlias");
-    localStorage.removeItem("usedAliases");
-    location.reload();
-  });
-}
-
-  
 </script>
+
 </div>
   
 <div class="pixel-pet" id="pixelPet" title="click me"></div>
