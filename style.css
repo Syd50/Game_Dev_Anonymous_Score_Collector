@@ -40,6 +40,8 @@ body{
   display:flex;
   justify-content:center;
   align-items:flex-start;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* Center app */
@@ -66,6 +68,7 @@ html::before{
 
   background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
   opacity: 0.85;
+  will-change: opacity;
   mask-image: radial-gradient(800px 600px at 45% 20%, black 0%, transparent 78%);
 }
 
@@ -183,7 +186,7 @@ nav a:hover{
   box-shadow:
     0 10px 24px rgba(0,0,0,0.25),
     inset 0 1px 0 rgba(255,255,255,0.05);
-
+  min-width:0;
   max-width: 100%;
   overflow: hidden; /* keeps inner stuff clipped to rounded corners */
 }
@@ -230,6 +233,13 @@ textarea{
   min-height: 90px;
   resize: vertical;
 }
+
+textarea, .desc{
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
 
 /* Slider rows */
 .row{
