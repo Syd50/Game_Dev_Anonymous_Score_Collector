@@ -39,14 +39,75 @@
 <p id="msg"></p>
 </div>
 
+
 <script>
+// ===== Alias generator (Submit page) =====
+const aliasInput = document.getElementById("alias");
+const aliasStatus = document.getElementById("aliasStatus");
+const btnGen = document.getElementById("genAlias");
+
+const aliasPool = [
+  "PixelWizard","DebugDuck","ShaderSlayer","404Knight","NullPointer",
+  "ByteBard","ConsoleCat","LoopGoblin","SyntaxSamurai","CrashMage",
+  "QuantumPotato","BinaryBunny","GhostCompiler","BitBandit","RAMRogue",
+  "KernelKitten","TurboToad","GlitchGnome","NeonNoodle","AIAlchemist",
+  "StackSprite","CosmicCoder","NanoNinja","PacketPirate","LogicLizard",
+  "OverclockOwl","CompileDragon","ScriptSprite","CyberSquirrel","RuntimeRaccoon"
+];
+
+const STORAGE_KEY = "claimedAlias";
+
+// Save manually typed alias too (so it carries over to Vote)
+if(aliasInput){
+  aliasInput.addEventListener("input", ()=>{
+    const v = aliasInput.value.trim();
+    if(v) localStorage.setItem(STORAGE_KEY, v);
+  });
+}
+
+// auto-fill if already chosen
+const saved = localStorage.getItem(STORAGE_KEY);
+if(saved && aliasInput){
+  aliasInput.value = saved;
+  if(aliasStatus) aliasStatus.textContent = "Alias locked in ✔";
+}
+
+if(btnGen && aliasInput){
+  btnGen.addEventListener("click", ()=>{
+    if(localStorage.getItem(STORAGE_KEY)){
+      if(aliasStatus) aliasStatus.textContent = `Alias locked: ${aliasInput.value} ✔`;
+      return;
+    }
+
+    const used = JSON.parse(localStorage.getItem("usedAliases") || "[]");
+    const available = aliasPool.filter(a=>!used.includes(a));
+
+    if(!available.length){
+      if(aliasStatus) aliasStatus.textContent = "All aliases taken 😱";
+      return;
+    }
+
+    const pick = available[Math.floor(Math.random()*available.length)];
+    aliasInput.value = pick;
+
+    localStorage.setItem(STORAGE_KEY, pick);
+    used.push(pick);
+    localStorage.setItem("usedAliases", JSON.stringify(used));
+
+    if(aliasStatus) aliasStatus.textContent = "Codename assigned 🎮";
+    btnGen.textContent = "✔";
+    setTimeout(()=> btnGen.textContent = "🎲 Random", 900);
+  });
+}
+
+// ===== App script API =====
 const API_URL = "https://script.google.com/macros/s/AKfycbxmH6wodw-LA55_cnFFNp4G7n2WeFh6-fKDaFjAuh3e3mJOuOtiQugfWqnPvT_9SJLCPA/exec";
 const API_KEY = "class9";
-
 
 const ideasDiv = document.getElementById("ideas");
 const msg = document.getElementById("msg");
 
+// Build 3 idea inputs
 for(let i=1;i<=3;i++){
   const box = document.createElement("div");
   box.className = "card";
@@ -60,51 +121,63 @@ for(let i=1;i<=3;i++){
   ideasDiv.appendChild(box);
 }
 
-    document.getElementById("submitBtn").onclick = async ()=>{
-      const alias = document.getElementById("alias").value.trim();
-      const titles = [...document.querySelectorAll(".title")];
-      const descs = [...document.querySelectorAll(".desc")];
-    
-      msg.textContent = "Uploading… ⏳";
-      if(!alias){ msg.textContent = "Enter an alias first ✨"; 
-                 return; }
-    
-      let sent = 0;
-    
-      try{
-        for(let i=0;i<titles.length;i++){
-          const t = titles[i].value.trim();
-          if(!t) continue;
-    
-          const payload = {
+// Submit handler
+document.getElementById("submitBtn").onclick = async ()=>{
+  const btn = document.getElementById("submitBtn");
+  const alias = document.getElementById("alias").value.trim();
+  const titles = [...document.querySelectorAll(".title")];
+  const descs = [...document.querySelectorAll(".desc")];
+
+  msg.textContent = "";
+
+  if(!alias){
+    msg.textContent = "Enter an alias first ✨";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Submitting…";
+  msg.innerHTML = "Uploading… <span class='spinner'></span>";
+
+  let sent = 0;
+
+  try{
+    for(let i=0;i<titles.length;i++){
+      const t = titles[i].value.trim();
+      if(!t) continue;
+
+      const payload = {
         type: "idea",
         apiKey: API_KEY,
         alias: alias,
         title: t,
         description: descs[i].value.trim()
-        };
-  
-        const r = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
-        const data = await r.json();
-        if(!data.ok) throw new Error(data.error || "submit failed");
-  
-        sent++;
-      }
+      };
 
-      if(sent === 0){
+      const r = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
+      const data = await r.json();
+      if(!data.ok) throw new Error(data.error || "submit failed");
+
+      sent++;
+    }
+
+    if(sent === 0){
       msg.textContent = "Add at least 1 idea title 📝";
       return;
     }
 
-
-    // Cute game-dev reaction
     msg.textContent = `Submitted! ✅  +${sent * 5} Creativity XP 🌟`;
 
-      }catch(e){
-        msg.textContent = "Error: " + e.message;
-      }
-    };
-    
+  }catch(e){
+    msg.textContent = "Error: " + e.message;
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "Submit";
+  }
+};
+
+
+
      
                                 // Background pixels
                                 // (function makePixels(){
