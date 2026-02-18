@@ -29,7 +29,7 @@
 <div class="alias-row">
   <input id="alias" placeholder="e.g. mintpanda" autocomplete="off">
   <button type="button" id="genAlias">🎲 Random</button>
-  <button type="button" id="resetAlias">♻ Reset</button>
+  <button type="button" id="genAlias">🎲 Reroll</button>
 </div>
 
 
@@ -100,7 +100,7 @@ if(btnGen && aliasInput){
 
     if(aliasStatus) aliasStatus.textContent = "Codename assigned 🎮";
     btnGen.textContent = "✔";
-    setTimeout(()=> btnGen.textContent = "🎲 Random", 900);
+    setTimeout(()=> btnGen.textContent = "🎲 Reroll", 900);
   });
 }
 
