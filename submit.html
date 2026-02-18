@@ -29,7 +29,11 @@
 <div class="alias-row">
   <input id="alias" placeholder="e.g. mintpanda" autocomplete="off">
   <button type="button" id="genAlias">🎲 Random</button>
+  <button type="button" id="resetAlias">♻ Reset</button>
 </div>
+
+
+  
 <p id="aliasStatus" class="muted"></p>
 
 
@@ -195,6 +199,18 @@ document.getElementById("submitBtn").onclick = async ()=>{
                                 //  host.appendChild(d);
                                 //  }
                                 //   })(); 
+
+// TEMP reset button for testing
+const resetBtn = document.getElementById("resetAlias");
+
+if(resetBtn){
+  resetBtn.addEventListener("click", ()=>{
+    localStorage.removeItem("claimedAlias");
+    localStorage.removeItem("usedAliases");
+    location.reload();
+  });
+}
+
   
 </script>
 </div>
